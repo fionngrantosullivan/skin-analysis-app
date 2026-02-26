@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+
+# React
+frontend/build/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# model files (large and not necessary to have in the repo)
+models/*.pth
+models/*.pkl
+models/*.h5
+models/*.pt
+
+# IDE stuff
+.vscode/
+*.swp
+*.swo
+*~
+
+# log files
+*.log
+
+# environment variables
+.env
+.env.local
