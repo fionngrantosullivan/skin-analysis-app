@@ -26,10 +26,13 @@ function ResultsChart({ predictions }) {
           <div key={index} className="chart-row">
             {/* truncate long class names so the label column doesn't get enormous,
                 22 chars is roughly the point where things start overflowing */}
-            <div className="chart-label" title={pred.class_name}>
-              {pred.class_name.length > 22 
-                ? pred.class_name.substring(0, 22) + '...' 
-                : pred.class_name}
+            <div className="chart-label" title={getDisplayName(pred.class_name)}>
+              {(() => {
+                const displayName = getDisplayName(pred.class_name);
+                return displayName.length > 22 
+                  ? displayName.substring(0, 22) + '...' 
+                  : displayName;
+              })()}
             </div>
             <div className="chart-bar-wrapper">
               {/* Math.max(..., 0.5) prevents a 0% bar from being completely invisible,
@@ -103,6 +106,39 @@ const CLASS_NAMES = [
   'Vasculitis Photos',
   'Warts Molluscum and other Viral Infections'
 ];
+
+// mapping of dataset class names to display-friendly names for the UI
+// exists to keep consistency between classes (removes "Photos", fixes capitalisation, replaces underscores) without changing actual inference names for backend/models 
+const CLASS_DISPLAY_NAMES = {
+  'Acne and Rosacea Photos': 'Acne and Rosacea',
+  'Actinic Keratosis Basal Cell Carcinoma and other Malignant Lesions': 'Actinic Keratosis, Basal Cell Carcinoma & Malignant Lesions',
+  'Atopic Dermatitis Photos': 'Atopic Dermatitis',
+  'Bullous Disease Photos': 'Bullous Disease',
+  'Cellulitis Impetigo and other Bacterial Infections': 'Cellulitis, Impetigo & Bacterial Infections',
+  'Eczema Photos': 'Eczema',
+  'Exanthems and Drug Eruptions': 'Exanthems and Drug Eruptions',
+  'Hair Loss Photos Alopecia and other Hair Diseases': 'Hair Loss, Alopecia & Hair Diseases',
+  'Herpes HPV and other STDs Photos': 'Herpes, HPV & STDs',
+  'Light Diseases and Disorders of Pigmentation': 'Light Diseases and Pigmentation Disorders',
+  'Lupus and other Connective Tissue diseases': 'Lupus and Connective Tissue Diseases',
+  'Melanoma Skin Cancer Nevi and Moles': 'Melanoma, Skin Cancer, Nevi & Moles',
+  'Nail Fungus and other Nail Disease': 'Nail Fungus and Nail Disease',
+  'Poison Ivy Photos and other Contact Dermatitis': 'Poison Ivy and Contact Dermatitis',
+  'Psoriasis pictures Lichen Planus and related diseases': 'Psoriasis, Lichen Planus & Related Diseases',
+  'Scabies Lyme Disease and other Infestations and Bites': 'Scabies, Lyme Disease & Infestations',
+  'Seborrheic Keratoses and other Benign Tumors': 'Seborrheic Keratoses and Benign Tumors',
+  'Squamous_Cell_Carcinoma': 'Squamous Cell Carcinoma',
+  'Systemic Disease': 'Systemic Disease',
+  'Tinea Ringworm Candidiasis and other Fungal Infections': 'Tinea, Ringworm, Candidiasis & Fungal Infections',
+  'Urticaria Hives': 'Urticaria (Hives)',
+  'Vascular Tumors': 'Vascular Tumors',
+  'Vasculitis Photos': 'Vasculitis',
+  'Warts Molluscum and other Viral Infections': 'Warts, Molluscum & Viral Infections'
+};
+
+// helper function to get the display name for a class
+// returns the name from CLASS_DISPLAY_NAMES map if it exists, otherwise falls back to the original name
+const getDisplayName = (className) => CLASS_DISPLAY_NAMES[className] || className;
 
 function App() {
   // selectedFile is the actual File object from the browser, which is needed for FormData when posting to the API
@@ -298,8 +334,7 @@ function App() {
               <div className="classes-grid">
                 {CLASS_NAMES.map((className, index) => (
                   <div key={index} className="class-tag">
-                    {/* replace underscores with spaces for display for some class names */}
-                    {className.replace(/_/g, ' ')}
+                    {getDisplayName(className)}
                   </div>
                 ))}
               </div>
@@ -392,7 +427,7 @@ function App() {
                   onClick={() => loadGradcam(0)}
                 >
                   <div className="prediction-name">
-                    {predictions.top_prediction.class_name}
+                    {getDisplayName(predictions.top_prediction.class_name)}
                   </div>
                   <div className="confidence-row">
                     <div className="confidence-bar-container primary-bar">
@@ -421,7 +456,7 @@ function App() {
                       onClick={() => loadGradcam(index + 1)}
                     >
                       <div className="prediction-rank">#{index + 2}</div>
-                      <div className="prediction-name">{pred.class_name}</div>
+                      <div className="prediction-name">{getDisplayName(pred.class_name)}</div>
                       <div className="confidence-bar-container small">
                         <div 
                           className="confidence-bar" 
@@ -506,9 +541,12 @@ function App() {
                           // disable all buttons while a heatmap is loading to prevent concurrent requests from racing each other
                           disabled={loadingGradcam}
                         >
-                          {isPrimary ? <strong>#1</strong> : `#${index + 1}`} {pred.class_name.length > 25 
-                            ? pred.class_name.substring(0, 25) + '...' 
-                            : pred.class_name}
+                          {isPrimary ? <strong>#1</strong> : `#${index + 1}`} {(() => {
+                            const displayName = getDisplayName(pred.class_name);
+                            return displayName.length > 25 
+                              ? displayName.substring(0, 25) + '...' 
+                              : displayName;
+                          })()}
                         </button>
                       );
                     })}
@@ -527,7 +565,7 @@ function App() {
                   {!loadingGradcam && gradcamImages[activeGradcamIndex] && (
                     <div className="gradcam-visualisation">
                       <p className="gradcam-label">
-                        Heatmap for: <strong>{gradcamImages[activeGradcamIndex].class_name}</strong>
+                        Heatmap for: <strong>{getDisplayName(gradcamImages[activeGradcamIndex].class_name)}</strong>
                       </p>
                       {/* the heatmap src is the base64 data URI obtained from loadGradcam */}
                       <img 
