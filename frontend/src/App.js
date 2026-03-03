@@ -496,19 +496,22 @@ function App() {
                   {/* one button per top-5 prediction, clicking fetches (or retrieves from cache)
                       the heatmap for that specific class index */}
                   <div className="gradcam-controls">
-                    {predictions.predictions.slice(0, 5).map((pred, index) => (
-                      <button
-                        key={index}
-                        className={`gradcam-button ${activeGradcamIndex === index ? 'active' : ''}`}
-                        onClick={() => loadGradcam(index)}
-                        // disable all buttons while a heatmap is loading to prevent concurrent requests from racing each other
-                        disabled={loadingGradcam}
-                      >
-                        #{index + 1}: {pred.class_name.length > 25 
-                          ? pred.class_name.substring(0, 25) + '...' 
-                          : pred.class_name}
-                      </button>
-                    ))}
+                    {predictions.predictions.slice(0, 5).map((pred, index) => {
+                      const isPrimary = index === 0;
+                      return (
+                        <button
+                          key={index}
+                          className={`gradcam-button ${isPrimary ? 'primary' : ''} ${activeGradcamIndex === index ? 'active' : ''}`}
+                          onClick={() => loadGradcam(index)}
+                          // disable all buttons while a heatmap is loading to prevent concurrent requests from racing each other
+                          disabled={loadingGradcam}
+                        >
+                          {isPrimary ? <strong>#1</strong> : `#${index + 1}`} {pred.class_name.length > 25 
+                            ? pred.class_name.substring(0, 25) + '...' 
+                            : pred.class_name}
+                        </button>
+                      );
+                    })}
                   </div>
 
                   {/* spinner shown while waiting for the /gradcam response, Grad-CAM can take 

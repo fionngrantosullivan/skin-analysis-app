@@ -753,6 +753,20 @@
   text-align: left;
 }
 
+/* highlight the first/top gradcam option similarly to the 'Most Likely' card */
+.gradcam-button.primary {
+  background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+  border: 3px solid #00897b;
+  color: #004d40;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.gradcam-button.primary:hover {
+  background: linear-gradient(135deg, #b2dfdb 0%, #80cbc4 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 137, 123, 0.2);
+}
+
 .gradcam-button:hover {
   background: #e0f2f1;
   transform: translateY(-2px);
@@ -770,7 +784,7 @@
   cursor: not-allowed;
 }
 
-.gradcam-visualization {
+.gradcam-visualisation {
   text-align: center;
   margin-top: 20px;
 }
