@@ -276,9 +276,9 @@ function App() {
             <p>
               This tool is for <b>educational and informational purposes only</b>. 
               It is NOT a substitute for professional medical advice, diagnosis, or treatment. 
-              Always seek the advice of a qualified healthcare provider with any questions 
-              regarding a medical condition. Never disregard professional medical advice or 
-              delay seeking it because of results from this tool.
+              Always seek the advice of a healthcare professional with any questions 
+              regarding a medical condition you may have. Never disregard professional medical advice or 
+              delay seeking it as a result of this tool's output.
             </p>
           </div>
         </div>
@@ -298,7 +298,6 @@ function App() {
               <div className="classes-grid">
                 {CLASS_NAMES.map((className, index) => (
                   <div key={index} className="class-tag">
-                    <span className="class-number">{index + 1}</span>
                     {/* replace underscores with spaces for display for some class names */}
                     {className.replace(/_/g, ' ')}
                   </div>
@@ -338,7 +337,7 @@ function App() {
                   disabled={!selectedFile || loading}
                   className="submit-button"
                 >
-                  {loading ? 'Analyzing...' : 'Analyze Image'}
+                  {loading ? 'Analysing...' : 'Analyse Image'}
                 </button>
                 {/* reset button only appears once a file is selected */}
                 {selectedFile && (
@@ -373,13 +372,14 @@ function App() {
                   <strong>Understanding Confidence Scores</strong>
                 </div>
                 <p>
-                  The <strong>confidence percentage</strong> represents how certain the AI model 
-                  is about each prediction. It's calculated using a <em>softmax function</em> that 
+                  The <b>confidence percentage</b> represents how certain the AI model 
+                  is in its predictions. It's calculated using a <em>softmax function</em>, which 
                   converts the model's raw outputs into probabilities that sum to 100% across all 
-                  possible conditions. A higher percentage indicates the model found more visual 
-                  features in your image that match that particular condition. For example, 85% 
-                  confidence means the model is quite certain, while 30% suggests uncertainty 
-                  and other conditions should also be considered.
+                  possible class (the 24 skin diseases in this case). A higher percentage indicates the model 
+                  found more features in your image that match that particular condition. For example, 85% 
+                  confidence means the model is quite confident the condition belongs to that disease, while 
+                  30% suggests uncertainty, and that the other conditions within the results should be 
+                  considered more strongly.
                 </p>
               </div>
 
@@ -461,30 +461,30 @@ function App() {
                       </div>
                       <p>
                         <strong>Grad-CAM (Gradient-weighted Class Activation Mapping)</strong> is 
-                        an explainability technique that helps visualise <em>which parts of an image</em> 
-                        the AI model focuses on when making a prediction.
+                        an explainability technique which helps visualise the <em>specific parts of an image </em>
+                        that the model focuses on the most when making a prediction.
                       </p>
                       <div className="gradcam-steps">
                         <div className="step">
                           <span className="step-num">1</span>
-                          <span>The model processes your image through its neural network layers</span>
+                          <span>The model processes the image through its neural network layers</span>
                         </div>
                         <div className="step">
                           <span className="step-num">2</span>
-                          <span>Gradients (measures of importance) are calculated for the predicted class</span>
+                          <span>Gradients (measures of importance) are computed for the predicted class (i.e. the predicted skin disease in this case)</span>
                         </div>
                         <div className="step">
                           <span className="step-num">3</span>
-                          <span>These gradients highlight which image regions most influenced the prediction</span>
+                          <span>These gradients highlight which image regions influenced the prediction the most</span>
                         </div>
                         <div className="step">
                           <span className="step-num">4</span>
                           <span>A heatmap is generated: <span className="color-hot">warm colors (red/yellow)</span> = high importance, <span className="color-cold">cool colors (blue/green)</span> = low importance</span>
                         </div>
                       </div>
-                      <p className="note">
-                        This transparency helps you understand the model's reasoning and verify 
-                        it's focusing on relevant skin features rather than background artifacts.
+                      <p>
+                        <em>This transparency helps you understand the model's reasoning and verify 
+                        it's focusing on relevant skin features rather than background artifacts.</em>
                       </p>
                     </div>
                   )}
