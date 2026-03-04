@@ -327,7 +327,7 @@ function App() {
               className="classes-toggle"
               onClick={() => setShowClasses(!showClasses)}
             >
-              <span className="toggle-icon">{showClasses ? '▼' : '▶'}</span>
+              <span className={`toggle-icon${showClasses ? ' open' : ''}`}></span>
               View All Detectable Conditions ({CLASS_NAMES.length} categories)
             </button>
             {showClasses && (

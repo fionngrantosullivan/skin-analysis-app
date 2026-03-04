@@ -124,8 +124,16 @@
 
 .toggle-icon {
   font-size: 0.85rem;
+  display:inline-block;
+  width:0;
+  height:0;
+  border-top:6px solid transparent;
+  border-bottom:6px solid transparent;
+  border-left:6px solid currentColor;
   transition: transform 0.3s ease;
 }
+
+.toggle-icon.open { transform: rotate(90deg); }
 
 .classes-grid {
   display: grid;
