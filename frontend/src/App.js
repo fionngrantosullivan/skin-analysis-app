@@ -76,8 +76,8 @@ function ResultsChart({ predictions }) {
   );
 }
 
-// I'll change this when deploying to a new server
-const API_URL = 'http://localhost:8000';
+// configurable API base URL, falls back to local backend if not set
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 // class names from the dataset
 const CLASS_NAMES = [
