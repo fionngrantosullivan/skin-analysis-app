@@ -6,6 +6,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+ENV MODEL_PATH=/app/models/aggregated_efficientnet_b3.pth
+
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 

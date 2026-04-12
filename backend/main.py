@@ -38,7 +38,7 @@ app.add_middleware(
 import os
 
 # get model filepath and 
-MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "aggregated_efficientnet_b3.pth")
+MODEL_PATH = os.environ.get("MODEL_PATH", os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "aggregated_efficientnet_b3.pth"))
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 NUM_CLASSES = 24
 
