@@ -1,6 +1,6 @@
 FROM node:18-alpine AS frontend-builder
 WORKDIR /app
-COPY frontend/package*.json ./frontend/
+COPY frontend/ ./frontend/
 RUN npm --prefix frontend install && npm --prefix frontend run build
 
 FROM python:3.11-slim
