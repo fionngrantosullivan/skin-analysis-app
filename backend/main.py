@@ -103,7 +103,7 @@ def load_model():
         print(f"Model loaded successfully on {DEVICE}")
         
         # Mount React build folder for frontend serving on deployed instance
-        build_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "build")
+        build_dir = os.path.join(os.path.dirname(__file__), "frontend", "build")
         if os.path.exists(build_dir):
             app.mount("/", StaticFiles(directory=build_dir, html=True), name="static")
             print(f"Frontend static files mounted from {build_dir}")
