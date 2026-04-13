@@ -22,6 +22,9 @@ from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 from pytorch_grad_cam.utils.image import show_cam_on_image
 
+# Static file serving for deployed frontend
+from fastapi.staticfiles import StaticFiles
+
 app = FastAPI(title="Skin Condition Classifier API")
 
 # CORS middleware to allow React frontend to access the API
@@ -98,6 +101,14 @@ def load_model():
         gradcam = GradCAM(model=model, target_layers=target_layers)
         
         print(f"Model loaded successfully on {DEVICE}")
+        
+        # Mount React build folder for frontend serving on deployed instance
+        build_dir = os.path.join(os.path.dirname(__file__), "../frontend/build")
+        if os.path.exists(build_dir):
+            app.mount("/", StaticFiles(directory=build_dir, html=True), name="static")
+            print(f"Frontend static files mounted from {build_dir}")
+        else:
+            print(f"Note: Frontend build directory not found at {build_dir}. API-only mode.")
         print("Grad-CAM initialized")
     except Exception as e:
         print(f"Error loading model: {e}")
