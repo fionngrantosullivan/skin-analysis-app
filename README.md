@@ -160,7 +160,7 @@ The application is deployed as a Hugging Face space at [this link](https://huggi
 
 **Build process:**
 1. Node builder stage compiles the React app with `npm run build`.
-2. Python 3.11 slim stage installs dependencies, copies the compiled frontend, and downloads the model weights from the repo that holds them on [Hugging Face Hub](https://huggingface.co/fosullyy/skin-analysis-efficient-net-b3) at image build time.
+2. Python 3.11 slim stage installs dependencies, copies the compiled frontend, and downloads the model weights from the [repo that holds them on Hugging Face Hub](https://huggingface.co/fosullyy/skin-analysis-efficient-net-b3) at image build time.
 3. Uvicorn starts and FastAPI serves both the API and the SPA from port 8000.
 
 ---
