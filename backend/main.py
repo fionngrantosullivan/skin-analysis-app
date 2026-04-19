@@ -101,14 +101,6 @@ def load_model():
         gradcam = GradCAM(model=model, target_layers=target_layers)
         
         print(f"Model loaded successfully on {DEVICE}")
-        
-        # Mount React build folder for frontend serving on deployed instance
-        build_dir = os.path.join(os.path.dirname(__file__), "frontend", "build")
-        if os.path.exists(build_dir):
-            app.mount("/", StaticFiles(directory=build_dir, html=True), name="static")
-            print(f"Frontend static files mounted from {build_dir}")
-        else:
-            print(f"Note: Frontend build directory not found at {build_dir}. API-only mode.")
         print("Grad-CAM initialized")
     except Exception as e:
         print(f"Error loading model: {e}")
@@ -228,6 +220,16 @@ async def get_gradcam(file: UploadFile = File(...), class_index: int = Query(Non
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error generating Grad-CAM: {e}")
+
+# Mount the React build AFTER all API routes so /predict and /gradcam are matched first.
+# Starlette matches routes in registration order; a catch-all Mount("/") registered before
+# the API routes would intercept POST requests and serve index.html instead.
+build_dir = os.path.join(os.path.dirname(__file__), "frontend", "build")
+if os.path.exists(build_dir):
+    app.mount("/", StaticFiles(directory=build_dir, html=True), name="static")
+    print(f"Frontend static files mounted from {build_dir}")
+else:
+    print(f"Note: Frontend build directory not found at {build_dir}. API-only mode.")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

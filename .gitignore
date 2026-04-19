@@ -27,11 +27,12 @@ frontend/.env.development.local
 frontend/.env.test.local
 frontend/.env.production.local
 
-# model files (large and not necessary to have in the repo)
+# model files (large - provide via Render Disk or download in Dockerfile)
 models/*.pth
 models/*.pkl
 models/*.h5
 models/*.pt
+!models/.gitkeep
 
 # IDE stuff
 .vscode/
