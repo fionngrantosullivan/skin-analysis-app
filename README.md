@@ -33,23 +33,9 @@ An AI-powered web application for skin condition classification, built for my Fi
 
 ## Architecture Diagram
 
-```
-┌─────────────────────────────────────────┐
-│              Docker Container            │
-│                                          │
-│  ┌──────────────┐   ┌─────────────────┐ │
-│  │   React SPA  │   │   FastAPI       │ │
-│  │  (built at   │──▶│                 │ │
-│  │  image time) │   │  POST /predict  │ │
-│  └──────────────┘   │  POST /gradcam  │ │
-│                     │                 │ │
-│                     │  EfficientNet-B3│ │
-│                     │  (PyTorch CPU)  │ │
-│                     │                 │ │
-│                     │  Grad-CAM       │ │
-│                     └─────────────────┘ │
-└─────────────────────────────────────────┘
-```
+Created using UML notation in [PlantText](https://www.planttext.com/).
+
+![Architecture](docs/architecture.png)
 
 ---
 
