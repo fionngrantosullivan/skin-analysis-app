@@ -16,6 +16,7 @@ import uvicorn
 import numpy as np
 import cv2
 import base64
+import gc
 
 # GradCAM
 from pytorch_grad_cam import GradCAM
@@ -165,61 +166,72 @@ async def get_gradcam(file: UploadFile = File(...), class_index: int = Query(Non
     if not file.content_type.startswith('image/'):
         raise HTTPException(status_code=400, detail="File must be an image")
     
+    # Free memory before the backward pass - on low-RAM hosts (e.g. Render free tier 512MB)
+    # Grad-CAM peaks memory usage because it has to retain activations for backprop,
+    # so we want as much headroom as possible before starting.
+    gc.collect()
+
     try:
         # read image file
         contents = await file.read()
         image = Image.open(io.BytesIO(contents)).convert('RGB')
         original_image = image.copy()
-        
+
         # preprocess image
         image_tensor = transform(image).unsqueeze(0).to(DEVICE)
-        
+
         # get prediction if class_index not provided
         if class_index is None:
             with torch.no_grad():
                 outputs = model(image_tensor)
                 probabilities = torch.nn.functional.softmax(outputs[0], dim=0)
                 class_index = probabilities.argmax().item()
-        
+                del outputs, probabilities
+
         # generate Grad-CAM
         targets = [ClassifierOutputTarget(class_index)]
         grayscale_cam = gradcam(input_tensor=image_tensor, targets=targets)
-        cam = grayscale_cam[0, :]  # Get first (only) image in batch
-        
+        cam = grayscale_cam[0, :].copy()  # keep a copy, drop the batched array
+
+        # drop the tensor and batched CAM now that we have what we need - avoids holding
+        # the autograd graph and the full-batch array in RAM through PIL/OpenCV processing
+        del image_tensor, grayscale_cam
+        gc.collect()
+
         # resize original image to match model input size
         img_resized = original_image.resize((300, 300))
-        img_np = np.array(img_resized)
-        
-        # normalise image to [0, 1] for overlay
-        img_np = img_np.astype(np.float32) / 255.0
-        
-        # resize CAM to match image size
+        img_np = np.array(img_resized).astype(np.float32) / 255.0
+
+        # resize CAM to match image size and overlay
         cam_resized = cv2.resize(cam, (300, 300))
-        
-        # overlay CAM on image
         visualisation = show_cam_on_image(img_np, cam_resized, use_rgb=True)
-        
-        # convert to base64
-        # necessary for encoding the GradCAM image into the JSON response so the frontend can load it
+
+        # convert heatmap to base64 PNG for the JSON response
         pil_image = Image.fromarray(visualisation)
         buffer = io.BytesIO()
         pil_image.save(buffer, format='PNG')
         img_str = base64.b64encode(buffer.getvalue()).decode()
-        
-        # also encode original image the saem way
+
+        # encode the resized original image the same way
         buffer_orig = io.BytesIO()
         img_resized.save(buffer_orig, format='PNG')
         img_orig_str = base64.b64encode(buffer_orig.getvalue()).decode()
-        
+
         return JSONResponse(content={
             "heatmap": img_str,
             "original": img_orig_str,
             "class_index": class_index,
             "class_name": CLASS_NAMES[class_index]
         })
-        
+
     except Exception as e:
+        # log the full error server-side so it shows up in Render logs
+        import traceback
+        print(f"Grad-CAM error: {e}\n{traceback.format_exc()}", flush=True)
         raise HTTPException(status_code=500, detail=f"Error generating Grad-CAM: {e}")
+    finally:
+        # ensure memory is reclaimed even on exception paths
+        gc.collect()
 
 # Mount the React build AFTER all API routes so /predict and /gradcam are matched first.
 # Starlette matches routes in registration order; a catch-all Mount("/") registered before
