@@ -119,10 +119,6 @@ async def startup_event():
     # load model on startup
     load_model()
 
-@app.get("/")
-async def root():
-    return {"message": "Skin Condition Classifier API is running"}
-
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     # check if model isn't loaded - 500 if so

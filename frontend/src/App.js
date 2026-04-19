@@ -77,7 +77,7 @@ function ResultsChart({ predictions }) {
 }
 
 // configurable API base URL, falls back to local backend if not set
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_URL = process.env.REACT_APP_API_URL || '';
 
 // class names from the dataset
 const CLASS_NAMES = [
