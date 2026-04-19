@@ -59,7 +59,7 @@ The classifier is a fine-tuned **EfficientNet-B3** trained on  the Derm-24 datas
 
 **Further training details** are contained in [`notebooks/model_efficientnet_b3_with_visualisations.ipynb`](notebooks/model_efficientnet_b3_with_visualisations.ipynb), the actual notebook that was used to train the model.
 
-**Explainability implementation** is documented in [`notebooks/gradcam_explainability.ipynb`](notebooks/gradcam_explainability.ipynb), which was used to explore the implementation of Grad-CAM heatmaps, before I added them to the backend code. Because of this, the heatmap overlay logic is a little different between them.
+**Explainability implementation** is documented in [`notebooks/gradcam_explainability.ipynb`](notebooks/gradcam_explainability.ipynb), which was used to explore the implementation of Grad-CAM heatmaps, before I added them to the backend code. Because of this, the heatmap overlay logic is a little different between them, but the actual computation is the same.
 
 ### Detectable conditions
 
